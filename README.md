@@ -1,6 +1,6 @@
 -----
 
-# README: Classificação de Imagens CIFAR-10 com CNN
+# Classificação de Imagens CIFAR-10 com CNN
 
 -----
 
