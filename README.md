@@ -1,45 +1,103 @@
-# Classificação de Imagens CIFAR-10 com CNN
+-----
+
+# README: Classificação de Imagens CIFAR-10 com CNN
+
+-----
 
 ## Visão Geral
-Este projeto implementa uma **Rede Neural Convolucional (CNN)** para classificar imagens do **conjunto de dados CIFAR-10**, que consiste em 60.000 imagens coloridas de 32x32 pixels, abrangendo 10 classes (por exemplo, avião, carro, pássaro). O modelo é construído usando **PyTorch** e realiza a classificação de imagens através de treinamento e avaliação no conjunto de dados.
+
+Este projeto implementa uma **Rede Neural Convolucional (CNN)** usando **PyTorch** para classificar imagens do conjunto de dados **CIFAR-10**. O CIFAR-10 contém 60.000 imagens coloridas de 32x32 pixels, divididas em 10 classes (ex: avião, carro, pássaro). O objetivo é treinar um modelo para identificar essas classes.
 
 ## Funcionalidades
-* **Conjunto de Dados**: CIFAR-10 com 50.000 imagens para treinamento e 10.000 para teste.
-* **Modelo**: CNN com duas camadas convolucionais, max-pooling e camadas totalmente conectadas.
-* **Treinamento**: 30 épocas com otimizador SGD (taxa de aprendizado: 0.001, momentum: 0.9).
-* **Avaliação**: Atinge aproximadamente 65.49% de acurácia no conjunto de teste.
-* **Inferência**: Suporta a classificação de imagens personalizadas com pré-processamento.
+
+  * **Dataset**: CIFAR-10 (50.000 imagens de treino, 10.000 de teste) com pré-processamento de normalização.
+  * **Modelo**: CNN com duas camadas convolucionais, max-pooling e três camadas totalmente conectadas.
+  * **Treinamento**: 30 épocas com otimizador **SGD** (learning rate: 0.001, momentum: 0.9) e função de perda CrossEntropyLoss.
+  * **Avaliação**: Acurácia calculada no conjunto de teste.
+  * **Inferência**: Classificação de imagens customizadas após pré-processamento.
 
 ## Requisitos
-* Python 3.x
-* PyTorch
-* Torchvision
-* PIL (Pillow)
-* NumPy
+
+  * Python 3.x
+  * PyTorch
+  * Torchvision
+  * PIL (Pillow)
+  * NumPy
+
+Instale as dependências com: `pip install torch torchvision pillow numpy`
 
 ## Uso
 
-### Configuração:
-Instale as dependências: `pip install torch torchvision pillow numpy`
-O conjunto de dados CIFAR-10 será baixado automaticamente pelo script.
+### 1\. Preparação
 
-### Treinamento:
-Execute o script para treinar o modelo por 30 épocas.
-Os pesos do modelo são salvos em `trained_net.pth`.
+Os dados do CIFAR-10 serão baixados automaticamente na primeira execução para a pasta `./data`.
 
-### Teste:
-Avalie o modelo no conjunto de teste para calcular a acurácia.
-Use imagens personalizadas para inferência colocando-as em `test_images/` e atualizando `image_paths` no script.
+### 2\. Treinamento
 
-### Inferência:
-Pré-processe as imagens para 32x32 com normalização.
-Carregue o modelo treinado e preveja as classes para novas imagens.
+O script treina o modelo por 30 épocas, exibindo a perda por época. O modelo treinado é salvo em `trained_net.pth`.
 
-## Exemplo
 ```python
+# Exemplo de loop de treinamento
+for epoch in range(30):
+    # ... código de treinamento ...
+    print(f'Loss: {running_loss / len(train_loader):.4f}')
+
+torch.save(net.state_dict(), 'trained_net.pth')
+```
+
+### 3\. Carregar o Modelo
+
+Para carregar o modelo salvo:
+
+```python
+net = NeuralNet()
+net.load_state_dict(torch.load('trained_net.pth'))
+```
+
+### 4\. Avaliação
+
+A acurácia do modelo no conjunto de teste é calculada:
+
+```python
+# ... código de avaliação ...
+print(f'Accuracy of the network on the 10000 test images: {accuracy:.2f}%')
+```
+
+### 5\. Inferência
+
+Para classificar suas próprias imagens (`test_images/img.png`, `test_images/img2.png`):
+
+```python
+import torch
+import torchvision.transforms as transforms
+from PIL import Image
+
+# ... new_transform e load_image ...
+
 image_paths = ['test_images/img.png', 'test_images/img2.png']
-for img in image_paths:
-    image = load_image(img)
-    output = net(image)
-    predicted_class = class_name[torch.max(output, 1)[1].item()]
-    print(f'Classe Prevista: {predicted_class}')
+images = [load_image(img) for img in image_paths]
+
+net.eval()
+with torch.no_grad():
+    for image in images:
+        output = net(image)
+        _, predicted = torch.max(output, 1)
+        print(f'Classe Prevista: {class_name[predicted.item()]}')
+```
+
+## Resultados
+
+  * **Perda Final de Treinamento**: Aproximadamente `0.4550`
+  * **Acurácia no Teste**: **68.48%**
+  * **Previsões de Exemplo**:
+      * `img.png`: dog
+      * `img2.png`: plane
+
+## Observações e Melhorias
+
+O modelo pode ser aprimorado com:
+
+  * Ajuste de hiperparâmetros.
+  * Adição de regularização (ex: Dropout).
+  * Uso de arquiteturas de rede mais profundas.
+  * Técnicas de aumento de dados (Data Augmentation).
