@@ -92,12 +92,3 @@ with torch.no_grad():
   * **Previsões de Exemplo**:
       * `img.png`: dog
       * `img2.png`: plane
-
-## Observações e Melhorias
-
-O modelo pode ser aprimorado com:
-
-  * Ajuste de hiperparâmetros.
-  * Adição de regularização (ex: Dropout).
-  * Uso de arquiteturas de rede mais profundas.
-  * Técnicas de aumento de dados (Data Augmentation).
